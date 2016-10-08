@@ -46,9 +46,9 @@ class MailData(object):
 			for line in f:
 				if metaDataEnded:
 					if 'body' in d:
-						d['body'] += line
+						d['body'] += line.replace("\n\r", " ")
 					else:
-						d['body'] =  line
+						d['body'] =  line.replace("\n\r", " ")
 					continue
 				if re.match("^[A-Za-z\-]*: ", line):
 					indxOfDelimit = line.index(":")
