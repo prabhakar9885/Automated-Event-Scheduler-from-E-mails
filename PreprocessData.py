@@ -7,6 +7,17 @@ import os, sys, json, re
 import datetime as dt
 import pickle as p
 from glob import iglob
+from HTMLParser import HTMLParser
+
+class MLStripper(HTMLParser):
+    def __init__(self):
+        self.reset()
+        self.fed = []
+    def handle_data(self, d):
+        self.fed.append(d)
+    def get_data(self):
+        return ''.join(self.fed)
+
 
 
 class MailData(object):
@@ -142,32 +153,41 @@ if __name__ == "__main__":
 
 	mailData = MailData()
 
-	print "Parsing files..."
+	if len(sys.argv) == 1:
+		print "Parsing files..."
 
-	for path in iglob( sys.argv[1] + '/enron_mail_20150507/*/*/*/*'):
-		if os.path.isfile( path ):
-			mailData.addFile( pathToMailFile = path )
+		for path in iglob( sys.argv[1] + '/enron_mail_20150507/*/*/*/*'):
+			if os.path.isfile( path ):
+				mailData.addFile( pathToMailFile = path )
 
-	# print mailData.printMailData()
+		print "Pickling the mails..."
+		print "====================="
+		p.dump( mailData.mails, open("MailData.dump", "wb+") )
+		print "Done."
 
-	print "Pickling the mails..."
-	print "====================="
-	p.dump( mailData.mails, open("MailData.dump", "wb+") )
-	print "Done."
+		print "Filtering the Scheduling mails..."
+		print "================================="
+		filteredMails = filterMail(mails)
+		print "Done."
 
-	print "Filtering the Scheduling mails..."
-	print "================================="
-	filteredMails = filterMail(mails)
-	print "Done."
+		print "Organizing the mailing threads..."
+		print "================================="
+		mailThread = OrganizeMailsIntoThreads( filteredMails, mails )
+		p.dump( mailThread, open("mailThread.dump", "wb+") )
+		print "Subjects of Scheduling mails"
+		print mailThread.keys()
+		print "Done."
+	else:
+		filteredMails = p.load(open("MailData.dump", "rb") )
+		mailThread = p.load(open("mailThread.dump", "rb") )
+		print "Subjects of Scheduling mails"
+		print mailThread.keys()
 
-	print "Organizing the mailing threads..."
-	print "================================="
-	mailThread = OrganizeMailsIntoThreads( filteredMails, mails )
-	p.dump( mailThread, open("mailThread.dump", "wb+") )
-	print "Done."
 
-	print "Mail Threads with Sub: presentation"
-	for m in mailThread['presentation']:
+	print "Mail Threads with Sub: follow up"
+	for m in mailThread['follow up']:
 		print "#"*20 
 		indx = m['body'].index("----") if "----" in m['body'] else -1
-		print m['body'].replace("\n","").replace("\r","").replace("\t","")[:indx]
+		s = MLStripper()
+		tmp = s.feed( m['body'].replace("\n","").replace("\r","").replace("\t","")[:indx] )
+		print s.get_data()
