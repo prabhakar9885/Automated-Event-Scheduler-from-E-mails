@@ -66,10 +66,6 @@ class MailData(object):
 		self.mails += [ self.fixDataFormat(d) ];
 
 
-	def buildGraph(self):
-		pass
-
-
 	def printMailData(self):
 		for m in self.mails:
 			print "-*"*20
@@ -94,6 +90,52 @@ class MailData(object):
 
 		return mail
 
+	def filterMail( self, mails ):
+		keywords=["to meet","meeting with","meeting on","meet at","meeting at","scheduled a meet","schedule a meet","arrange a meet","tommorow at","attend a meet","attend the meet","meetings on","to a meet","meeting will be","i have a meet","tommorrow's meet","tomorrow at","this sunday","this monday","this tuesday","this wednesday","this thursday","this friday","this saturday","let's meet","request for a meeting","holding a business meet","book a meet","come by around","presence is requested","monday at","tuesday at","wednesday at","thursday at","friday at","saturday at","sunday at"];
+		keyword_frequency={}
+		for i in keywords:
+			keyword_frequency[i]=0
+		print "Number of mails to process ", len(mails)
+		f=open("output1.txt","wb")
+		filteredMails = []
+		for i in xrange(len(mails)):
+			if 'body' not in mails[i]:
+				continue;
+			mail = mails[i]['body'] 
+			for j in keywords:
+				if j in mail:
+					f.write(j+" : ")
+					f.write(mail)
+					f.write("\n")
+					filteredMails += [ mails[i] ];
+					keyword_frequency[j]+=1
+					break
+		print "Number of filtered mails ", len(filteredMails)
+		for i in keyword_frequency:
+			if keyword_frequency[i] > 0:
+				print i,keyword_frequency[i]
+		f.close()
+		return filteredMails
+
+		def OrganizeMailsIntoThreads( filteredMails, mails ):
+			filteredSubjects = set();
+			for mail in filteredMails:
+				subj = mail["Subject"].strip().lower()
+				filteredSubjects.add(subj)
+			mailsTemp = {};
+			for mail in mails:
+				if mail['Subject'] in filteredSubjects or \
+					"re: "+mail['Subject'] in filteredSubjects:
+					if mail['Subject'] in mailsTemp:
+						mailsTemp[mail['Subject']] += [ mail ];
+					else:
+						mailsTemp[mail['Subject']] = [ mail ];
+			mailsTemp.pop('')
+			return mailsTemp
+
+
+
+
 
 
 if __name__ == "__main__":
@@ -109,6 +151,23 @@ if __name__ == "__main__":
 	# print mailData.printMailData()
 
 	print "Pickling the mails..."
+	print "====================="
 	p.dump( mailData.mails, open("MailData.dump", "wb+") )
-
 	print "Done."
+
+	print "Filtering the Scheduling mails..."
+	print "================================="
+	filteredMails = filterMail(mails)
+	print "Done."
+
+	print "Organizing the mailing threads..."
+	print "================================="
+	mailThread = OrganizeMailsIntoThreads( filteredMails, mails )
+	p.dump( mailThread, open("mailThread.dump", "wb+") )
+	print "Done."
+
+	print "Mail Threads with Sub: presentation"
+	for m in mailThread['presentation']:
+		print "#"*20 
+		indx = m['body'].index("----") if "----" in m['body'] else -1
+		print m['body'].replace("\n","").replace("\r","").replace("\t","")[:indx]
