@@ -3,6 +3,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.linear_model import SGDClassifier
 import pickle as p
+import numpy as np
 
 class MLStripper(HTMLParser):
     def __init__(self):
@@ -17,10 +18,10 @@ class MLStripper(HTMLParser):
 categories = ['Yes', 'No']
 mailThread = p.load(open("mailThreadenron_mail_20150507.dump", "rb") )
 
-keys = mailThread.keys()[:100]
-targets = [0]*100
-yes = [1, 2, 8, 21, 29, 30, 37, 38, 55, 59, 61, 63, 68, 69, 74, 82, 92 ]
-for i in yes:
+keys = mailThread.keys()[:200]
+targets = [0]*200
+indexOfSchedulingMails = [1, 2, 8, 21, 29, 30, 37, 38, 55, 59, 61, 63, 68, 69, 74, 82, 92, 105 ,110 ,113 ,124 ,131 ,139 ,147 ,161 ,171 ,194 ,195 ]
+for i in indexOfSchedulingMails:
 	targets[i] = 1
 
 allBodyMerged = []
@@ -34,6 +35,13 @@ for key in keys:
 			s.feed( mail['body'].replace("\n","").replace("\r","").replace("\t","")[:indx] )
 			temp += s.get_data() + ". "
 	allBodyMerged += [ temp ]
+
+allBodyMerged += ['Lets meet at 2 am'];				
+targets += [1]
+allBodyMerged += ['Lets meet in the afternoon'];	
+targets += [1]
+targets = np.array(targets)
+
 
 
 # Tokenizing text 
@@ -59,8 +67,8 @@ clf = SGDClassifier(loss='hinge', penalty='l2',alpha=1e-3, n_iter=5, random_stat
 # =======
 docs_new = ['Meeting at 11:00 am', 'Meeting tomorrow at 12', 
 			'meeting in the afternoon', 'meeting at 1:45 pm',
-			'Lets meet at 2 am',
-			'Lets meet in the afternoon',
+			'Lets meet in the morning',
+			'Lets have a meeting in the evening',
 			'invitation for a meeting at 3 pm',
 			'God is love', 'OpenGL on the GPU is fast'
 			]
