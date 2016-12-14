@@ -77,5 +77,18 @@ X_new_tfidf = tfidf_transformer.transform(X_new_counts)
 
 predicted = clf.predict(X_new_tfidf)
 
+
+# Testing with user-input
+# =======================
 for i in xrange(len(predicted)):
 	print docs_new[i], " ==> ", predicted[i]
+
+print "Enter the mail content:"
+while True:
+	str = raw_input();
+	docs_new = [str]
+	X_new_counts = count_vect.transform(docs_new)
+	X_new_tfidf = tfidf_transformer.transform(X_new_counts)
+
+	predicted = clf.predict(X_new_tfidf)
+	print "Yes" if predicted==1 else "No"
