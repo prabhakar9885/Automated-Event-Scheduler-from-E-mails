@@ -30,8 +30,8 @@ def mergedText( dateTime ):
 		else:
 			trigrams += [item]
 	res = "";
-	print bigrams
-	print trigrams
+	# print bigrams
+	# print trigrams
 	try:
 		if len(trigrams) != 0:
 			res += trigrams[0];
@@ -48,12 +48,13 @@ def mergedText( dateTime ):
 					else:
 						res += " " + " ".join(tmp)
 		else:
-			for item in target:
-				item = item.split()
-				print item
-				res += item[0] + " "
-			for item in target[-1].split()[1:]:
-				res += item + " "
+			res += bigrams[0];
+			for i in xrange( 1, len(bigrams) ):
+				tmp = bigrams[i].split()
+				if res.split()[-1] == tmp[0]:
+					res += " " + tmp[1]
+				else:
+					res += " " + " ".join(tmp)
 	except:
 		res = "DateTime can't be extracted."
 	return res
