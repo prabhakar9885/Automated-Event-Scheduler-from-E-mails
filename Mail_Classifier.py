@@ -20,10 +20,10 @@ mailThread = p.load(open("mailThreadenron_mail_20150507.dump", "rb") )
 
 print "Preparing the train data..."
 
-keys = mailThread.keys()[:200]
-targets = [0]*200
-indexOfSchedulingMails = [1, 2, 8, 21, 29, 30, 37, 38, 55, 59, 61, 63, 68, 69, 74, 82, 92, 110 ,113 ,124 ,131 ,139, 161 ,171 ,194 ,195 ]
-indexOfReSchedulingMails = [105, 147]
+keys = mailThread.keys()
+targets = [0]*len(keys)
+indexOfSchedulingMails = [1, 2, 8, 21, 29, 30, 37, 38, 55, 59, 61, 63, 68, 69, 74, 82, 92, 110 ,113 ,124 ,131 ,139, 161 ,171 ,194, 195, 204, 213, 223, 255, 308, 323, 340, 365, 374, 392, 399, 403 ]
+indexOfReSchedulingMails = [105, 147, 306]
 for i in indexOfSchedulingMails:
 	targets[i] = 1
 for i in indexOfReSchedulingMails:
@@ -113,6 +113,5 @@ while True:
 	docs_new = [str]
 	X_new_counts = count_vect.transform(docs_new)
 	X_new_tfidf = tfidf_transformer.transform(X_new_counts)
-
 	predicted = clf.predict(X_new_tfidf)
 	print categories[predicted]
