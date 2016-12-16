@@ -57,11 +57,17 @@ def buildMailClassifier():
 			'would like to meet and speak to you on the 15th of September',\
 			'The monthly meeting will be on Monday, 12th December 2011',\
 			'The meetings will be on Monday',\
+			'please attend meeting',\
+			'project meeting',\
+			'video conference',\
+			'participate',\
+			'attendee for the meeting',\
 			'see you at 10:00',\
 			'see you at 10',\
 			'see you in the evening',\
 			'meeting is set at 10:20 pm',\
-			'meeting on Tuesday.'
+			'meeting on Tuesday.',\
+			'meeting will be held'
 			]
 	for m in schdeulingMails:
 		allBodyMerged += [m]
