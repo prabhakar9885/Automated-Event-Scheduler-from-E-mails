@@ -109,16 +109,12 @@ def mergedText( dateTime ):
 
 
 if len(sys.argv)==2 and sys.argv[1]=="RunOnDump":
-	i = 0
 	schedulingMails = []
 	reSchedulingMails = []
 	print "Loading the dump..."
 	mails = p.load( open("MailDataenron_mail_20150507.dump", "rb") )
 	# mails = p.load( open("./100Mails.dump", "rb") )
 	for mail in mails:
-		
-		if i==100:
-			break
 		try:
 			indx = mail['body'].index("----") if "----" in mail['body'] else -1
 			s = MLStripper()
@@ -133,7 +129,6 @@ if len(sys.argv)==2 and sys.argv[1]=="RunOnDump":
 			elif predicted==1:
 				print "#"*20
 				print "Actual date-time: ", mail['Date']
-				i += 1
 				print "Scheduling mail"
 				dateTime = getDateTime( docs_new[0] )
 				if dateTime == "DateTime can't be extracted.":
@@ -145,7 +140,6 @@ if len(sys.argv)==2 and sys.argv[1]=="RunOnDump":
 			elif predicted==2:
 				print "#"*20
 				print "Actual date-time: ", mail['Date']
-				i += 1
 				print "Re-Scheduling mail"
 				dateTime = getDateTime( docs_new[0] )			
 				if dateTime == "DateTime can't be extracted.":
