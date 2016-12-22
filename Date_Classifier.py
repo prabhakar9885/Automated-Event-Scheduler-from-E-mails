@@ -4,6 +4,7 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.linear_model import SGDClassifier
 import pickle as p
 import numpy as np
+import nltk
 
 class MLStripper(HTMLParser):
     def __init__(self):
@@ -62,12 +63,19 @@ if __name__ == '__main__':
 
 	# Testing
 	print "Testing the model..."
-	print "Enter the Date and Time:"
 	while True:
+		print "Enter the Date and Time:"
 		str = raw_input();
 		docs_new = [str]
 		X_new_counts = count_vect.transform(docs_new)
 		X_new_tfidf = tfidf_transformer.transform(X_new_counts)
 
 		predicted = clf.predict(X_new_tfidf)
-		print predicted
+		print predicted[0]
+		for i in xrange(1,6):
+			for ngram in nltk.ngrams( str.split(), i ):
+				docs_new = [" ".join(ngram) ]
+				X_new_counts = count_vect.transform(docs_new)
+				X_new_tfidf = tfidf_transformer.transform(X_new_counts)
+				predicted = clf.predict(X_new_tfidf)
+				print docs_new, predicted
